@@ -180,7 +180,7 @@ tr:{
  cr_no:'Bu ikisi birleşmez.', cr_jk:'İkisi de su tutar ama birleşmezler.', cr_dk:'Kristal dala tutunmuyor. Önce bir yuva lazım.',
  cr_degnek:'Halkayı dala geçirdim: halkalı değnek!', cr_asa:'Kristal halkaya oturdu. Büyü asası!', cr_anahtar:'Tüyü ipekle sardım. Rüzgâr anahtarı!',
  // ipuçları
- hx_dal:['Karga dalı bırakmıyor. Kargalar ani gürültüden çok korkar.','Atölyedeki maşayı ya da kovayı örse vur.'],
+ hx_dal:['Karga dalı bırakmıyor. Kargalar ani gürültüden çok korkar.','Atölyedeki maşayı veya kovayı örse vur. İkisi de kullanıldıysa örse doğrudan dokun; Keloğlan yerdeki taşı kullanır.'],
  hx_fire:['Atölyedeki ocak sönük. Ateşi canlandırmanın yolu var.','Körüğe dokun.'],
  hx_kova:['Kızgın halkayı soğutacak bir şey lazım.','Atölyedeki kovayı al.'],
  hx_su:['Boş kovayla ateş söner mi?','Kovayı yağmur fıçısında kullan.'],
@@ -275,7 +275,7 @@ en:{
  no1:'That won’t work.', no2:'Not like that.', no3:'Hmm, I should try something else.', no4:'Using that here would be silly.',
  cr_no:'These two don’t go together.', cr_jk:'Both hold water, but they don’t combine.', cr_dk:'The crystal won’t stay on the stick. It needs a socket.',
  cr_degnek:'I slid the ring onto the branch: a ringed stick!', cr_asa:'The crystal sits in the ring. A magic staff!', cr_anahtar:'I wrapped the feather in silk. The wind key!',
- hx_dal:['The crow won’t let go of the branch. Crows are scared of sudden noise.','Strike the anvil with the tongs or the bucket.'],
+ hx_dal:['The crow won’t let go of the branch. Crows are scared of sudden noise.','Strike the anvil with the tongs or bucket. If both were used, tap the anvil directly; Keloğlan can use a loose stone.'],
  hx_fire:['The workshop forge is cold. There’s a way to wake the fire.','Tap the bellows.'],
  hx_kova:['You need something to cool the hot ring.','Take the bucket in the workshop.'],
  hx_su:['Does an empty bucket cool anything?','Use the bucket on the rain barrel.'],
@@ -3778,12 +3778,25 @@ function hotspots(){
     if(F.bellows){say('kelo','bellows2');return;}
     G.busy=true;doAct('reachLow',1.1);A.bellowsT=1;SFX.forge();F.bellows=true;save();
     runScript([['wait',.8],['say','kelo','bellows'],['say','kelo','ringseen',{cam:240}]]);}});
-  L.push({id:'anvil',r:[355,405,80,48],ax:410,face:-1,tap(){say('kelo','anvil');},
-    use(it){if(it!=='masa'&&it!=='kova'&&it!=='sukova')return false;doAct('strike',.7);
-      setTimeout(()=>{SFX.clank();SFX.clank();A.flash=Math.max(A.flash,.15);sparkle(392,GY-34,18,'#ffe2a0');
-        if(F.crowGone){say('kelo','anvil2');return;}
-        F.crowGone=true;A.crow={x:950,y:214,vx:220,vy:-160};A.dal={x:964,y:218,vy:0,r:0,landed:false};SFX.caw();SFX.flap();save();
-        runScript([['say','kelo','anvil_hit',{cam:820}]]);},300);return true;}});
+  // Kullanılmış maşa ve kova yüzünden karga bulmacası kilitlenmesin.
+  function strikeAnvil(){
+    doAct('strike',.7);
+    setTimeout(()=>{SFX.clank();SFX.clank();A.flash=Math.max(A.flash,.15);sparkle(392,GY-34,18,'#ffe2a0');
+      if(F.crowGone){say('kelo','anvil2');return;}
+      F.crowGone=true;A.crow={x:950,y:214,vx:220,vy:-160};A.dal={x:964,y:218,vy:0,r:0,landed:false};SFX.caw();SFX.flap();save();
+      runScript([['say','kelo','anvil_hit',{cam:820}]]);},300);
+  }
+  L.push({id:'anvil',r:[355,405,80,48],ax:410,face:-1,
+    tap(){
+      if(!F.crowGone&&F.masa&&F.kova&&!has('masa')&&!has('kova')&&!has('sukova')){
+        strikeAnvil();return;
+      }
+      say('kelo','anvil');
+    },
+    use(it){
+      if(it!=='masa'&&it!=='kova'&&it!=='sukova')return false;
+      strikeAnvil();return true;
+    }});
   if(!F.masa)L.push({id:'masa',r:[422,255,50,92],ax:446,tap(){doAct('reach',.6);pickAfter(()=>{F.masa=true;addItem('masa');say('kelo','masa');},280);}});
   if(!F.kavanoz)L.push({id:'jar',r:[482,220,36,44],ax:496,tap(){doAct('reachHigh',.6);pickAfter(()=>{F.kavanoz=true;addItem('kavanoz');say('kelo','jar');},280);}});
   if(!F.kova)L.push({id:'kova',r:[448,412,50,42],ax:478,tap(){doAct('reachLow',.6);pickAfter(()=>{F.kova=true;addItem('kova');say('kelo','kova');},280);}});
