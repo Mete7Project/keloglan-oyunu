@@ -3703,6 +3703,11 @@ function loadGame(d){
   chapterReset(G.chapter);
   F=Object.assign(F,valid.F);
   G.inv=valid.inv.slice();
+  // Bölüm 6 eski kayıt kurtarma: örse vurmak için gereken iki eşya da tüketilmişse
+  // ve karga hâlâ duruyorsa, daha önce alınmış boş kovayı geri ver.
+  if(G.chapter===6&&!F.crowGone&&!G.inv.includes('masa')&&!G.inv.includes('kova')&&!G.inv.includes('sukova')&&(F.kova||F.masa)){
+    G.inv.push('kova');
+  }
   hero.x=hero.tx=clamp(+valid.x||(G.chapter===1?355:130),70,1760);
   G.form=valid.form==='bird'?'bird':'hero';
   bird.x=bird.tx=+valid.bx||1205;bird.y=bird.ty=+valid.by||330;
@@ -3773,7 +3778,7 @@ function hotspots(){
   L.push({id:'forge',r:[130,330,110,100],ax:262,face:-1,
     tap(){if(!F.bellows)say('kelo','forge0');else if(!F.cooled){doAct('hot',1.1);SFX.ow();say('kelo','hot');}
       else if(!F.halka){doAct('reach',.6);pickAfter(()=>{F.halka=true;addItem('halka');say('kelo','halka');},280);}else say('kelo','bellows2');},
-    use(it){if(it==='sukova'&&F.bellows&&!F.cooled){doAct('reach',.7);SFX.hiss();A.steam=1;F.cooled=true;removeItem('sukova');save();say('kelo','cool');return true;}return false;}});
+    use(it){if(it==='sukova'&&F.bellows&&!F.cooled){doAct('reach',.7);SFX.hiss();A.steam=1;F.cooled=true;swapItem('sukova','kova');save();say('kelo','cool');return true;}return false;}});
   L.push({id:'bellows',r:[262,392,92,56],ax:352,face:-1,tap(){
     if(F.bellows){say('kelo','bellows2');return;}
     G.busy=true;doAct('reachLow',1.1);A.bellowsT=1;SFX.forge();F.bellows=true;save();
@@ -3790,7 +3795,7 @@ function hotspots(){
   L.push({id:'barrel',r:[580,370,66,84],ax:660,face:-1,tap(){say('kelo','barrel');},
     use(it){if(it==='kova'){doAct('reach',.7);SFX.splash();swapItem('kova','sukova');say('kelo','fill');return true;}return false;}});
   L.push({id:'crack',r:[1022,336,62,72],ax:1020,face:1,tap(){if(F.kristal)say('kelo','crack3');else{doAct('reach',.7);say('kelo','crack');}},
-    use(it){if(it==='masa'&&!F.kristal){doAct('reach',.8);SFX.clank();pickAfter(()=>{F.kristal=true;removeItem('masa');addItem('kristal');sparkle(1047,381,18,'#c9c2ff');say('kelo','crack2');},350);return true;}return false;}});
+    use(it){if(it==='masa'&&!F.kristal){doAct('reach',.8);SFX.clank();pickAfter(()=>{F.kristal=true;addItem('kristal');sparkle(1047,381,18,'#c9c2ff');say('kelo','crack2');},350);return true;}return false;}});
   L.push({id:'circle',r:[1112,418,186,46],ax:1205,bird:true,tap(){say('kelo','circle0');},use(it){if(it==='asa'){toBird();return true;}return false;}});
   if(!F.doorOpen)L.push({id:'door',r:[1418,250,148,204],ax:1462,face:1,
     tap(){if(F.keyIn){UI.openRings();return;}runScript([['say','ac','door0'],['say','kelo','door0k']]);SFX.laugh();},
