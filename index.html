@@ -498,6 +498,8 @@ Object.assign(STR.tr,{
   m_export:'Dışa Aktar (JSON)', m_import:'İçe Aktar (JSON)',
   m_storage_note:'Not: Kayıtlar bu tarayıcının yerel depolamasında (localStorage) tutulur. Cihazlar arası taşımak için JSON dışa/içe aktarımını kullanabilirsin.',
   m_unsaved_warn:'Kaydedilmemiş ilerlemen var. Çıkmadan önce kaydetmek ister misin?',
+  m_new_warn:'Yeni oyun Bölüm 1’den başlar. Otomatik kayıt yenisiyle değişir; Oyunu Kaydet ile ayırdığın kayıt yuvaları silinmez.',m_new_yes:'Evet, yeni oyun',
+  bye_t:'Görüşmek üzere!',bye_p:'Oyun kapandı, ilerlemen kaydedildi. Bu sekmeyi tarayıcının kapat düğmesiyle kapatabilirsin.',bye_back:'Oyuna geri dön',
   m_exit_save:'Kaydet ve Çık', m_exit_nosave:'Kaydetmeden Çık',
   m_exit_title:'Oyun Güvenle Kapatıldı',
   m_exit_msg:'İlerlemen korundu. Tarayıcı sekmesini güvenle kapatabilir ya da dilediğinde ana menüden devam edebilirsin.',
@@ -802,6 +804,8 @@ Object.assign(STR.en,{
   m_export:'Export (JSON)',m_import:'Import (JSON)',
   m_storage_note:'Note: Saves are stored in this browser’s local storage. Use JSON export/import to transfer across devices.',
   m_unsaved_warn:'You have unsaved progress. Would you like to save before exiting?',
+  m_new_warn:'A new game starts from Chapter 1. The autosave will be replaced; slots saved with Save Game are kept.',m_new_yes:'Yes, new game',
+  bye_t:'See you soon!',bye_p:'The game is closed and your progress is saved. You can close this tab with your browser’s close button.',bye_back:'Back to the game',
   m_exit_save:'Save & Exit',m_exit_nosave:'Exit Without Saving',
   m_exit_title:'Game Safely Closed',
   m_exit_msg:'Your progress is safe. You may close this browser tab or return to the main menu anytime.',
@@ -3796,7 +3800,7 @@ function kafRingTune(){const K=kafAnim();K.tuneT=0;K.note=-1;}
 function kafUpdate(dt){
   if(A.kpass){A.kpass.t+=dt;if(A.kpass.out>0)A.kpass.out+=dt;}
   if(A.kfly){A.kfly.t+=dt;if(A.kfly.out>0)A.kfly.out+=dt;}
-  if(A.kfin){A.kfin.t+=dt;if(A.kfin.stage==='home')A.kfin.ht+=dt;}
+  if(A.kfin){A.kfin.t+=dt;if(A.kfin.stage==='home')A.kfin.ht+=dt;if(A.kfin.eatT>=0)A.kfin.eatT+=dt;}
   kafTunnelUpdate(dt);
   if(A.kland){A.kland.t+=dt;if(A.kland.t>1.4)A.kland=null;}
   if(F.kScene===3){devUpdate(dt);return;}
@@ -4738,8 +4742,8 @@ function drawFlightScene(vw,FL,a){
   // gökkuşağı izi
   for(let i=0;i<14;i++){const tx=ax-120-i*16,ty=ay-40+Math.sin(t*5-i*.5)*8;ctx.save();ctx.globalCompositeOperation='lighter';glow(tx,ty,10-i*.5,i%3===0?'90,230,180':i%3===1?'255,190,120':'170,150,255',.45*(1-i/14));ctx.restore();}
   const S=Object.assign({},ankaState(),{g:1,h:1,wrap:0,open:1,eat:-1});
-  drawAnka(ax,ay,{face:1,s:.95,fly:true,flap,S,rider:(rx,ry)=>{if(home)drawAnaVolume(rx-34,ry+2,{scale:.46,gaze:1,headTurn:.6,bodyTurn:.5,noShadow:true});ctx.save();ctx.translate(rx+(home?8:0),ry-GY);drawKelo({x:0,face:1,moving:false,phase:0,act:null,talk:0,mood:'happy',scale:.5},null,true);ctx.restore();}});
-  if(home)drawPeri(ax+60+Math.sin(t*1.3)*14,ay-150+Math.cos(t*1.1)*10,1.15,{wave:true});
+  drawAnka(ax,ay,{face:1,s:.95,fly:true,flap,S,rider:(rx,ry)=>{if(home)drawAnaVolume(rx-40,ry+2,{scale:.46,gaze:1,headTurn:.6,bodyTurn:.5,noShadow:true});ctx.save();ctx.translate(rx+(home?2:0),ry-GY);drawKelo({x:0,face:1,moving:false,phase:0,act:null,talk:0,mood:'happy',scale:.5},null,true);ctx.restore();
+    if(home)drawPeri(rx+40,ry-44+Math.sin(t*3)*1.5,.95,{noAura:false,wave:Math.sin(t*1.7)>.3});}});
   ctx.restore();
 }
 
@@ -5303,12 +5307,14 @@ Object.assign(STR.tr,{
   c7f_kelo_kilim:'Sağ ol, Dev Anası! Selamımız hep sana olsun.',
   c7f_anka1:'Kanatlarım artık üçünüzü de taşır. Hadi, Seher Ana’nın ocağına dönelim!',
   c7f_n1:'Zümrüdüanka, Kaf Dağı’ndan güneşin doğduğu yere doğru kanat çırptı. Yedi diyar birer birer ayaklarının altından geçti.',
-  c7f_n2:'O akşam Seher Ana’nın ocağı yeniden yandı. Kazan kaynadı, Dev Anası’nın kilimi ocağın başına serildi.',
+  c7f_n2:'O akşam Seher Ana’nın ocağı yeniden yandı. Üçü sımsıkı sarıldı; Dev Anası’nın kilimi ocağın başına serildi, kazanda tarhana çorbası kaynadı.',
+  c7f_soup1:'Hadi bakalım, tarhana çorbası pişti! Sini başına oturun, sıcak sıcak için.',
+  c7f_soup2:'Mmm... Yedi diyarda böyle çorba yok, ana! Bir kâse daha alabilir miyim?',
   c7f_ana4:'Bu ocak üçümüze de yeter. Hoş geldin kızım, bu ev artık senin de evin.',
   c7f_peri2:'Yedi diyar gördüm, Seher Ana. En güzeli bu ocakmış.',
   c7f_kelo2:'Ben de saray aramadım, ana. Aradığım bu sıcacık ocaktı.',
   c7f_n3:'Keloğlan yedi diyarı dolaştı ve en büyük sırrı öğrendi: Mutluluk, sevdiklerinle paylaştığın ocaktaydı.',
-  c7_complete_p:'Seher Ana kurtuldu. Zümrüdüanka; Keloğlan’ı, Nurperi’yi ve Seher Ana’yı ocaklarına geri getirdi. Ocak yeniden yanıyor.'
+  c7_complete_p:'Seher Ana kurtuldu. Zümrüdüanka; Keloğlan’ı, Nurperi’yi ve Seher Ana’yı ocaklarına geri getirdi. Ocak yeniden yanıyor, çorbalar sıcak.'
 });
 Object.assign(STR.en,{
   c7f_ana1:'Ah... That voice... Keloglan? My child, is it you?',
@@ -5320,12 +5326,14 @@ Object.assign(STR.en,{
   c7f_kelo_kilim:'Thank you, Giant Mother! Our greetings will always be with you.',
   c7f_anka1:'My wings can carry all three of you now. Come, let us return to Seher Ana’s hearth!',
   c7f_n1:'The Simurgh flew from Mount Qaf towards the rising sun. The seven realms passed beneath them one by one.',
-  c7f_n2:'That evening Seher Ana’s hearth burned again. The pot bubbled, and the Giant Mother’s rug was laid beside the fire.',
+  c7f_n2:'That evening Seher Ana’s hearth burned again. The three of them hugged tightly; the Giant Mother’s rug was laid by the fire and tarhana soup bubbled in the pot.',
+  c7f_soup1:'Come now, the tarhana soup is ready! Sit around the tray and drink it while it’s hot.',
+  c7f_soup2:'Mmm... There is no soup like this in all seven realms, mother! May I have another bowl?',
   c7f_ana4:'This hearth is big enough for all three of us. Welcome, my daughter; this is your home now too.',
   c7f_peri2:'I have seen seven realms, Seher Ana. The most beautiful of all is this hearth.',
   c7f_kelo2:'I was never looking for a palace, mother. What I was looking for was this warm hearth.',
   c7f_n3:'Keloglan travelled seven realms and learned the greatest secret: happiness was the hearth he shared with those he loved.',
-  c7_complete_p:'Seher Ana is free. The Simurgh brought Keloglan, Nurperi and Seher Ana back to their hearth. The fire burns again.'
+  c7_complete_p:'Seher Ana is free. The Simurgh brought Keloglan, Nurperi and Seher Ana back to their hearth. The fire burns again and the soup is hot.'
 });
 function drawDevPeri(){
   const K=A.dev;if(!K||K.periT<0)return;
@@ -5347,10 +5355,12 @@ function devReunion(){
     ['do',()=>{K.hugOn=false;K.groupOn=false;hero.act=null;K.party=0;K.laugh=1.4;doAct('cheer',2.4);SFX.laugh&&SFX.laugh();}],
     ['say','devana','c7f_dev1',{cam:DEV.devX-520}],['say','kelo','c7f_kelo_kilim'],
     ['say','anka','c7f_anka1',{cam:0}],
-    ['do',()=>{A.kfin={t:0,stage:'fly',ht:0};SFX.flap&&SFX.flap();SFX.whoosh&&SFX.whoosh();}],['wait',2.4],
+    ['do',()=>{A.kfin={t:0,stage:'fly',ht:0,eatT:-1};SFX.flap&&SFX.flap();SFX.whoosh&&SFX.whoosh();}],['wait',2.4],
     ['say','narrator','c7f_n1'],['wait',1.4],
     ['do',()=>{if(A.kfin){A.kfin.stage='home';A.kfin.ht=0;}tone(392,2.2,'sine',null,.04);tone(523,2.2,'sine',null,.03,.4);}],['wait',1.8],
-    ['say','narrator','c7f_n2'],['say','ana','c7f_ana4'],['say','peri','c7f_peri2'],['say','kelo','c7f_kelo2'],['say','narrator','c7f_n3']
+    ['say','narrator','c7f_n2'],['say','ana','c7f_ana4'],
+    ['do',()=>{if(A.kfin)A.kfin.eatT=0;SFX.pop&&SFX.pop();tone(659,.5,'sine',null,.03);}],['wait',1.6],
+    ['say','ana','c7f_soup1'],['say','kelo','c7f_soup2'],['say','peri','c7f_peri2'],['say','kelo','c7f_kelo2'],['say','narrator','c7f_n3']
   ],()=>{F.c7Completed=true;F.kAct3Done=true;save();SFX.win&&SFX.win();UI.c7CompleteCard();});
 }
 /* Ev: Seher Ana'nın ocağı (ekran düzleminde, özgün çizim) */
@@ -5390,13 +5400,16 @@ function drawHearthHome(vw,FN,a){
   ctx.save();ctx.setTransform(VIEW.S,0,0,VIEW.S,0,0);ctx.fillStyle='#4a2c1b';ctx.fillRect(0,fy,vw,H-fy);ctx.restore();
   ctx.save();ctx.translate(cx,fy+52);ctx.scale(1,.3);const ts=120;[[-1,-1],[1,-1],[-1,1],[1,1]].forEach(([zx,zy],i)=>{ctx.save();ctx.translate(zx*ts/2,zy*ts/2);kilimTile(i,DEV.kilimWant[i],ts,0);ctx.restore();});
   ctx.strokeStyle='#f1d790';ctx.lineWidth=4;ctx.strokeRect(-ts,-ts,ts*2,ts*2);ctx.restore();
-  // üçü ocağın başında
-  const ch=sm(t/1.6);
-  drawAnaVolume(cx-215,fy+8,{gaze:1,headTurn:.6,bodyTurn:.7,wave:Math.max(0,Math.sin(t*.8))*.0,talking:UI.dlgWho==='ana'&&UI.typing&&!UI.typing.done,scale:1.05});
-  drawPeri(cx+200+Math.sin(tm*.9)*5,fy-150,1.75,{wave:UI.dlgWho==='peri'});
-  ctx.save();ctx.translate(cx+310,fy+8-GY);
-  const cheer=t<3.2?{type:'cheer',t:t%1,dur:1}:null;
-  drawKelo({x:0,face:-1,moving:false,phase:0,act:cheer,talk:UI.dlgWho==='kelo'&&UI.typing&&!UI.typing.done?1:0,mood:'happy',scale:1.02},null,true);ctx.restore();
+  // önce ocak önünde üçlü sarılma, sonra sini başında çorba
+  const hug=t>1.2&&t<6.2?Math.min(1,(t-1.2)/.5)*Math.min(1,(6.2-t)/.5):0,sep=sm((t-5.8)/1.4),eatK=FN.eatT>=0?sm(FN.eatT/1.2):0;
+  const anaX=lerp(cx-215,cx-175,sep),keloX=lerp(cx-128,cx+175,sep),periX=lerp(cx-60,cx+275,sep),periY=lerp(fy-160,fy-140,sep);
+  if(hug>.02){ctx.save();ctx.globalCompositeOperation='lighter';glow(cx-140,fy-110,110,'255,212,140',hug*.38);for(let i=0;i<5;i++){const a=tm*1.3+i*1.26;glow(cx-140+Math.cos(a)*60,fy-130+Math.sin(a)*30,8,'255,225,165',hug*.3);}ctx.restore();}
+  drawAnaVolume(anaX,fy+8,{gaze:1,headTurn:.6,bodyTurn:.7,stroke:hug,talking:UI.dlgWho==='ana'&&UI.typing&&!UI.typing.done,scale:1.05});
+  drawPeri(periX+Math.sin(tm*.9)*4*sep,periY,1.75,{hug,wave:UI.dlgWho==='peri'&&hug<.1});
+  ctx.save();ctx.translate(keloX,fy+8-GY);
+  const kAct=hug>.02?{type:'hug',t:Math.min(t-1.2,1),dur:9}:(t>6.6&&t<9?{type:'cheer',t:(t-6.6)%1,dur:1}:null);
+  drawKelo({x:0,face:-1,moving:sep>0&&sep<1,phase:t*9,act:kAct,talk:UI.dlgWho==='kelo'&&UI.typing&&!UI.typing.done?1:0,mood:'happy',scale:1.02},null,true);ctx.restore();
+  if(eatK>0)drawSoupTray(cx,fy+44,eatK,FN.eatT);
   ctx.restore();
   // ocağın sıcak ışığı her şeyi sarar
   ctx.save();ctx.globalCompositeOperation='lighter';glow(cx,fy-80,vw*.55,'255,150,80',.12*fk);ctx.restore();
@@ -5438,6 +5451,31 @@ Object.assign(STR.en,{
   c7d_hint_q1b:['The tower bell by the misty lake rang before dawn.','Turn the hour hand of the stone clock to 4 (04:00), then tap the Giant Mother to tell her.'],
   c7d_hint_nap:['The Giant Mother dozed off after a wrong answer.','Tap the Giant Mother to wake her and listen to the question again.']
 });
+
+/* Sini (bakır tepsi) üzerinde dumanı tüten tarhana çorbası, ekmek ve tahta kaşıklar */
+function drawSoupTray(x,y,k,et){
+  ctx.save();ctx.globalAlpha*=k;ctx.translate(x,y+(1-k)*14);
+  // alçak sofra ayağı ve bakır sini
+  ctx.fillStyle='#5a3620';ctx.fillRect(-60,-6,120,22);
+  ell(0,-8,150,30);const g=ctx.createLinearGradient(-150,0,150,0);g.addColorStop(0,'#9a5426');g.addColorStop(.5,'#e7a35c');g.addColorStop(1,'#8a4a20');ctx.fillStyle=g;ctx.fill();st(2.4,'#4a2410');
+  ell(0,-10,132,24);st(1.2,'rgba(255,220,170,.55)');
+  // ekmek
+  ell(0,-14,30,10);fl('#d9a05a');st(1.4,'#6d3f1a');for(let i=-1;i<=1;i++){ctx.beginPath();ctx.moveTo(i*10-5,-18);ctx.lineTo(i*10+5,-12);st(1.2,'#8a5524');}
+  // üç kâse
+  [[-88,-6],[80,-6],[0,8]].forEach(([bx,by],i)=>{
+    ctx.save();ctx.translate(bx,by);
+    ctx.beginPath();ctx.moveTo(-26,-14);ctx.quadraticCurveTo(-24,10,0,12);ctx.quadraticCurveTo(24,10,26,-14);ctx.closePath();fl('#f2e6d0');st(1.8,'#5a3a26');
+    ctx.beginPath();ctx.moveTo(-20,-6);ctx.lineTo(20,-6);st(2,'#2f6b8a');
+    ell(0,-14,26,7);fl('#c8572a');ell(-6,-15,8,2.4);fl('rgba(255,190,120,.6)');
+    for(let d=0;d<4;d++){circ(-12+d*8,-14+(d%2),1.4);fl('#7a9a3a');}
+    // kaşık: ağza götürülüp geri iner
+    const sp=Math.max(0,Math.sin((et||0)*2.2+i*2.1));ctx.save();ctx.translate(14,-16-sp*26);ctx.rotate(-.9+sp*.5);
+    ctx.fillStyle='#b07a42';ctx.fillRect(-1.6,-24,3.2,24);ell(0,1,5,3.4);fl('#b07a42');ctx.restore();
+    // buhar
+    for(let s=0;s<3;s++){const q=(((et||0)*.45+s*.33+i*.2)%1);ctx.save();ctx.globalAlpha*=(1-q)*.5;blob(Math.sin(q*7+s+i)*6,-22-q*44,6+q*8,4+q*5,9640+s+i*3,.2,8,true);fl('#fbf3ea');ctx.restore();}
+    ctx.restore();});
+  ctx.restore();
+}
 
 /* ===== 06 · Oyun mantığı: durum, eşyalar, tarifler, etkileşim noktaları, senaryo, ipucu, kayıt ===== */
 let F={};          // kalıcı bayraklar (kaydedilir)
@@ -7637,6 +7675,7 @@ UI.menu=function(kind,parentKind){
     <p class="small" id="diffNote">${T('diff_'+DIFF+'_p')}</p>
     <div class="row">${pause?`<button class="btn" id="mResume">${T('resume')}</button>`:sv?`<button class="btn" id="mCont">${T('cont')}</button>`:''}
     ${!pause&&!sv?`<button class="btn" id="mNew">${T('start')}</button>`:''}
+    ${!pause&&sv?`<button class="btn alt" id="mNewOver">${T('newgame')}</button>`:''}
     ${pause&&!session?`<button class="btn alt" id="mNew">${T('newgame')}</button>`:''}
     ${!pause||session?`<button class="btn alt" id="mChapterSelect">${T('m_chapter_select')}</button>`:''}
     ${!session?`<button class="btn alt" id="mSave">${T('m_save')}</button>`:''}
@@ -7647,6 +7686,7 @@ UI.menu=function(kind,parentKind){
     if(pause)$('mResume').onclick=()=>{m.hidden=true;G.mode=G.prevMode||'play';};
     if(!pause&&sv)$('mCont').onclick=()=>{audioOn();loadGame(sv);startPlay(false);};
     if($('mNew'))$('mNew').onclick=()=>{audioOn();newGame();save();startPlay(true);};
+    if($('mNewOver'))$('mNewOver').onclick=()=>{audioOn();UI.menu('newconfirm',kind);};
     if($('mChapterSelect'))$('mChapterSelect').onclick=()=>{audioOn();UI.menu('chapters',kind);};
     if($('mSave'))$('mSave').onclick=()=>{audioOn();UI.menu('save',kind);};
     $('mLoad').onclick=()=>{audioOn();UI.menu('load',kind);};
@@ -7784,6 +7824,13 @@ UI.menu=function(kind,parentKind){
     if($('mBack'))$('mBack').onclick=()=>UI.menu('title');
     return;
   }
+  if(kind==='newconfirm'){
+    m.innerHTML=`<div class="card"><div class="eyebrow">${T('eyebrow7')}</div><h1>${T('newgame')}</h1><p>${T('m_new_warn')}</p>
+      <div class="row"><button class="btn" id="mNewYes">${T('m_new_yes')}</button><button class="btn alt" id="mBack">${T('m_back')}</button></div></div>`;
+    $('mNewYes').onclick=()=>{audioOn();newGame();save();startPlay(true);};
+    $('mBack').onclick=()=>UI.menu(baseKind==='pause'?'pause':'title');
+    return;
+  }
   if(kind==='exited'){
     G.mode='title';
     m.innerHTML=`<div class="card"><div class="eyebrow">${T('eyebrow7')}</div><h1>${T('m_exit_title')}</h1>
@@ -7791,6 +7838,7 @@ UI.menu=function(kind,parentKind){
       <div class="row"><button class="btn" id="mBackTitle">${T('m_return_title')}</button></div></div>`;
     $('mBackTitle').onclick=()=>UI.menu('title');
     try{if(window.Capacitor&&window.Capacitor.Plugins&&window.Capacitor.Plugins.App)window.Capacitor.Plugins.App.exitApp();}catch(_){}
+    UI.exitPage();
     return;
   }
 };
@@ -7871,6 +7919,24 @@ $('bMenu').onclick=e=>{audioOn();if(isActivePlayMode()){G.prevMode=G.mode;G.mode
 if($('bExit'))$('bExit').onclick=e=>{audioOn();if(isActivePlayMode()){G.prevMode=G.mode;G.mode='pause';UI.menu('exit','pause');}else{UI.menu('exit',G.mode==='title'?'title':'pause');}e.currentTarget.blur();};
 function syncSound(){$('sw').style.opacity=AU.muted?0:1;$('bSound').setAttribute('aria-pressed',String(!AU.muted));}
 $('bSound').onclick=e=>{audioOn();setMuted(!AU.muted);syncSound();e.currentTarget.blur();};syncSound();
+
+/* Oyundan çık: önce sesi kes, sekmeyi kapatmayı dene; tarayıcı izin vermezse önceki sayfaya dön;
+   o da yoksa oyunu tamamen kapatan bir "görüşmek üzere" ekranı göster. (Android uygulamasında exitApp çalışır.) */
+UI.exitPage=function(){
+  try{if(AU.ctx&&AU.ctx.state==='running')AU.ctx.suspend();}catch(e){}
+  setTimeout(()=>{
+    try{window.close();}catch(e){}
+    setTimeout(()=>{
+      if(window.closed)return;
+      try{if(document.referrer&&history.length>1){history.back();return;}}catch(e){}
+      let o=document.getElementById('byeScreen');
+      if(!o){o=document.createElement('div');o.id='byeScreen';document.body.appendChild(o);}
+      o.setAttribute('style','position:fixed;inset:0;z-index:9999;background:#120c0a;color:#f3e2c4;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:24px;font-family:Nunito,system-ui,sans-serif');
+      o.innerHTML=`<div style="font-size:42px;margin-bottom:10px">🔥</div><h2 style="margin:0 0 10px;font-size:26px">${T('bye_t')}</h2><p style="max-width:440px;opacity:.85;line-height:1.5;margin:0 0 22px">${T('bye_p')}</p><button class="btn" id="byeBack">${T('bye_back')}</button>`;
+      document.getElementById('byeBack').onclick=()=>{o.remove();audioOn();UI.menu('title');};
+    },250);
+  },700);
+};
 
 /* ===== 08 · Ana döngü: ölçekleme, kamera, girdi, güncelleme, çizim ===== */
 const cv=$('cv'),mctx=cv.getContext('2d');
