@@ -3800,7 +3800,7 @@ function kafRingTune(){const K=kafAnim();K.tuneT=0;K.note=-1;}
 function kafUpdate(dt){
   if(A.kpass){A.kpass.t+=dt;if(A.kpass.out>0)A.kpass.out+=dt;}
   if(A.kfly){A.kfly.t+=dt;if(A.kfly.out>0)A.kfly.out+=dt;}
-  if(A.kfin){A.kfin.t+=dt;if(A.kfin.stage==='home')A.kfin.ht+=dt;if(A.kfin.eatT>=0)A.kfin.eatT+=dt;}
+  if(A.kfin){A.kfin.t+=dt;if(A.kfin.stage==='home')A.kfin.ht+=dt;if(A.kfin.eatT>=0)A.kfin.eatT+=dt;if(A.kfin.bloomT>=0)A.kfin.bloomT+=dt;if(A.kfin.endT>=0)A.kfin.endT+=dt;}
   kafTunnelUpdate(dt);
   if(A.kland){A.kland.t+=dt;if(A.kland.t>1.4)A.kland=null;}
   if(F.kScene===3){devUpdate(dt);return;}
@@ -5324,12 +5324,12 @@ Object.assign(STR.tr,{
   c7f_kelo_kilim:'Sağ ol, Dev Anası! Selamımız hep sana olsun.',
   c7f_anka1:'Kanatlarım artık üçünüzü de taşır. Hadi, Seher Ana’nın ocağına dönelim!',
   c7f_n1:'Zümrüdüanka, Kaf Dağı’ndan güneşin doğduğu yere doğru kanat çırptı. Yedi diyar birer birer ayaklarının altından geçti.',
-  c7f_n2:'O akşam Seher Ana’nın ocağı yeniden yandı. Üçü sımsıkı sarıldı; Dev Anası’nın kilimi ocağın başına serildi, kazanda tarhana çorbası kaynadı.',
-  c7f_soup1:'Hadi bakalım, tarhana çorbası pişti! Sini başına oturun, sıcak sıcak için.',
+  c7f_n2:'Zümrüdüanka onları Seher Ana’nın bahçesine, yolculuğun başladığı kapının önüne indirdi. Seher Ana önce oğluna, sonra Nurperi’ye sımsıkı sarıldı; Dev Anası’nın kilimi bahçeye serildi.',
+  c7f_soup1:'Hadi bakalım, tarhana çorbası pişti! Bahçede sofrayı kurdum, sıcak sıcak için.',
   c7f_soup2:'Mmm... Yedi diyarda böyle çorba yok, ana! Bir kâse daha alabilir miyim?',
-  c7f_ana4:'Bu ocak üçümüze de yeter. Hoş geldin kızım, bu ev artık senin de evin.',
-  c7f_peri2:'Yedi diyar gördüm, Seher Ana. En güzeli bu ocakmış.',
-  c7f_kelo2:'Ben de saray aramadım, ana. Aradığım bu sıcacık ocaktı.',
+  c7f_ana4:'Bu bahçe, bu ocak üçümüze de yeter. Hoş geldin kızım, bu ev artık senin de evin.',
+  c7f_peri2:'Yedi diyar gördüm, Seher Ana. En güzeli bu bahçeymiş.',
+  c7f_kelo2:'Ben de saray aramadım, ana. Aradığım bu bahçe, bu sofra, bu sıcacık ocaktı.',
   c7f_n3:'Keloğlan yedi diyarı dolaştı ve en büyük sırrı öğrendi: Mutluluk, sevdiklerinle paylaştığın ocaktaydı.',
   c7_complete_p:'Seher Ana kurtuldu. Zümrüdüanka; Keloğlan’ı, Nurperi’yi ve Seher Ana’yı ocaklarına geri getirdi. Ocak yeniden yanıyor, çorbalar sıcak.'
 });
@@ -5343,11 +5343,11 @@ Object.assign(STR.en,{
   c7f_kelo_kilim:'Thank you, Giant Mother! Our greetings will always be with you.',
   c7f_anka1:'My wings can carry all three of you now. Come, let us return to Seher Ana’s hearth!',
   c7f_n1:'The Simurgh flew from Mount Qaf towards the rising sun. The seven realms passed beneath them one by one.',
-  c7f_n2:'That evening Seher Ana’s hearth burned again. The three of them hugged tightly; the Giant Mother’s rug was laid by the fire and tarhana soup bubbled in the pot.',
-  c7f_soup1:'Come now, the tarhana soup is ready! Sit around the tray and drink it while it’s hot.',
+  c7f_n2:'The Simurgh set them down in Seher Ana’s garden, by the very gate where the journey began. Seher Ana hugged her son, then Nurperi, tightly; the Giant Mother’s rug was laid on the grass.',
+  c7f_soup1:'Come now, the tarhana soup is ready! I have laid the table in the garden; drink it while it’s hot.',
   c7f_soup2:'Mmm... There is no soup like this in all seven realms, mother! May I have another bowl?',
-  c7f_ana4:'This hearth is big enough for all three of us. Welcome, my daughter; this is your home now too.',
-  c7f_peri2:'I have seen seven realms, Seher Ana. The most beautiful of all is this hearth.',
+  c7f_ana4:'This garden and this hearth are big enough for all three of us. Welcome, my daughter; this is your home now too.',
+  c7f_peri2:'I have seen seven realms, Seher Ana. The most beautiful of all is this garden.',
   c7f_kelo2:'I was never looking for a palace, mother. What I was looking for was this warm hearth.',
   c7f_n3:'Keloglan travelled seven realms and learned the greatest secret: happiness was the hearth he shared with those he loved.',
   c7_complete_p:'Seher Ana is free. The Simurgh brought Keloglan, Nurperi and Seher Ana back to their hearth. The fire burns again and the soup is hot.'
@@ -5372,71 +5372,86 @@ function devReunion(){
     ['do',()=>{K.hugOn=false;K.groupOn=false;hero.act=null;K.party=0;K.laugh=1.4;doAct('cheer',2.4);SFX.laugh&&SFX.laugh();}],
     ['say','devana','c7f_dev1',{cam:DEV.devX-520}],['say','kelo','c7f_kelo_kilim'],
     ['say','anka','c7f_anka1',{cam:0}],
-    ['do',()=>{A.kfin={t:0,stage:'fly',ht:0,eatT:-1};SFX.flap&&SFX.flap();SFX.whoosh&&SFX.whoosh();}],['wait',2.4],
+    ['do',()=>{A.kfin={t:0,stage:'fly',ht:0,eatT:-1,bloomT:-1,endT:-1};SFX.flap&&SFX.flap();SFX.whoosh&&SFX.whoosh();}],['wait',2.4],
     ['say','narrator','c7f_n1'],['wait',1.4],
     ['do',()=>{if(A.kfin){A.kfin.stage='home';A.kfin.ht=0;}tone(392,2.2,'sine',null,.04);tone(523,2.2,'sine',null,.03,.4);}],['wait',1.8],
     ['say','narrator','c7f_n2'],['say','ana','c7f_ana4'],
     ['do',()=>{if(A.kfin)A.kfin.eatT=0;SFX.pop&&SFX.pop();tone(659,.5,'sine',null,.03);}],['wait',1.6],
-    ['say','ana','c7f_soup1'],['say','kelo','c7f_soup2'],['say','peri','c7f_peri2'],['say','kelo','c7f_kelo2'],['say','narrator','c7f_n3']
+    ['say','ana','c7f_soup1'],['say','kelo','c7f_soup2'],['say','peri','c7f_peri2'],['say','kelo','c7f_kelo2'],
+    ['do',()=>{if(A.kfin)A.kfin.bloomT=0;SFX.magic&&SFX.magic();tone(523,1.2,'sine',784,.04);tone(659,1.4,'sine',988,.03,.3);}],['wait',2.4],
+    ['say','narrator','c7f_n3'],
+    ['do',()=>{if(A.kfin)A.kfin.endT=0;SFX.win&&SFX.win();}],['wait',4.8]
   ],()=>{F.c7Completed=true;F.kAct3Done=true;save();SFX.win&&SFX.win();UI.c7CompleteCard();});
 }
-/* Ev: Seher Ana'nın ocağı (ekran düzleminde, özgün çizim) */
+/* Final: Seher Ana'nın bahçesi (ekran düzleminde, özgün çizim). Sarılma → sofra ve çorba → bahçe çiçeklenir,
+   kalpler ve renkli yapraklar uçuşur → "Son / Keloğlan'ın maceraları devam ediyor..." */
+function drawHeart(x,y,r,col){ctx.beginPath();ctx.moveTo(x,y+r*.9);ctx.bezierCurveTo(x-r*1.4,y-r*.1,x-r*.7,y-r*1.2,x,y-r*.45);ctx.bezierCurveTo(x+r*.7,y-r*1.2,x+r*1.4,y-r*.1,x,y+r*.9);ctx.closePath();ctx.fillStyle=col;ctx.fill();}
+function drawFlower(x,y,k,hue,seed){if(k<=0)return;const s=sm(k);ctx.save();ctx.translate(x,y);
+  ctx.beginPath();ctx.moveTo(0,0);ctx.quadraticCurveTo(3,-10*s,0,-22*s);st(2,'#4f8a3c');ell(-5*s,-9*s,5*s,2.2*s,-.6);fl('#5f9e48');
+  if(s>.3){const b=sm((k-.3)/.7),r=7*b;ctx.translate(0,-22*s);ctx.rotate(Math.sin(tm*1.5+seed)*.12);
+    for(let i=0;i<6;i++){const a=i*Math.PI/3;ell(Math.cos(a)*r*.9,Math.sin(a)*r*.9,r*.75,r*.45,a);fl('hsl('+hue+',85%,'+(66+(i%2)*6)+'%)');}
+    circ(0,0,r*.45);fl('#f5c542');}
+  ctx.restore();}
 function drawHearthHome(vw,FN,a){
-  const t=FN.ht,fy=H*.76,cx=vw*.5;ctx.save();ctx.globalAlpha=a;
-  const bg=ctx.createLinearGradient(0,0,0,H);bg.addColorStop(0,'#3b2419');bg.addColorStop(.6,'#6d4329');bg.addColorStop(1,'#2a1810');ctx.fillStyle=bg;ctx.fillRect(0,0,vw,H);
-  // sıvalı duvar
-  const wg=ctx.createRadialGradient(cx,fy-160,40,cx,fy-160,vw*.7);wg.addColorStop(0,'#e7c592');wg.addColorStop(.55,'#b98a5a');wg.addColorStop(1,'#5e3c26');ctx.fillStyle=wg;ctx.fillRect(0,40,vw,fy-40);
-  // tavan kirişleri
-  for(let i=0;i<7;i++){const x=i*vw/6;ctx.fillStyle='#4a2c1b';ctx.fillRect(x-14,0,28,48);}ctx.fillStyle='#3a2215';ctx.fillRect(0,36,vw,16);
-  // pencere: gece, ay ve uzaklaşan Zümrüdüanka
-  const wx=vw*.16,wy=150;ctx.fillStyle='#1d2647';rr(wx-70,wy-60,140,120,10);ctx.fill();
-  for(let i=0;i<14;i++){circ(wx-60+r2(9601,i)*120,wy-52+r2(9602,i)*100,.8+(i%2)*.5);fl('rgba(255,250,230,'+(.4+.4*Math.sin(tm*2+i))+')');}
-  circ(wx+34,wy-26,13);fl('#fff3c9');circ(wx+40,wy-30,11);fl('#1d2647');
-  const ak=Math.min(1,t/9),ax=wx-50+ak*110,ay=wy+20-ak*50;ctx.save();ctx.globalCompositeOperation='lighter';for(let i=0;i<8;i++)glow(ax-i*6,ay+i*3,4-i*.3,i%2?'90,230,180':'255,200,120',.6*(1-i/8));ctx.restore();
-  ctx.beginPath();ctx.moveTo(ax-8,ay);ctx.quadraticCurveTo(ax,ay-6+Math.sin(tm*8)*3,ax+8,ay);st(1.6,'#ffd77a');
-  ctx.strokeStyle='#4a2c1b';ctx.lineWidth=8;ctx.strokeRect(wx-70,wy-60,140,120);ctx.beginPath();ctx.moveTo(wx,wy-60);ctx.lineTo(wx,wy+60);ctx.moveTo(wx-70,wy);ctx.lineTo(wx+70,wy);st(5,'#4a2c1b');
-  // raf, testiler ve kurutulmuş biber dizisi
-  const sx=vw*.82;ctx.fillStyle='#5a3620';ctx.fillRect(sx-90,150,180,10);
-  [['#b8653a',-60],['#d8b073',-10],['#8c4b2c',40]].forEach(([c,o],i)=>{ell(sx+o,132,16+i*2,20);fl(c);st(1.6,'#3a2215');ctx.fillStyle=c;ctx.fillRect(sx+o-6,106,12,10);});
-  for(let k=0;k<9;k++){ell(vw*.7,70+k*13,5,8,.2*Math.sin(k));fl(k%2?'#b3261e':'#d23a22');}ctx.beginPath();ctx.moveTo(vw*.7,52);ctx.lineTo(vw*.7,186);st(1.2,'#6b4a2a');
-  // taş ocak (dar ekranda ocak ve üç karakter birlikte ölçeklenir)
+  const t=FN.ht,fy=H*.8,cx=vw*.5,bl=FN.bloomT>=0?FN.bloomT:-1,en=FN.endT>=0?FN.endT:-1;ctx.save();ctx.globalAlpha=a;
+  // gün batımı göğü
+  const sk=ctx.createLinearGradient(0,0,0,fy);sk.addColorStop(0,'#5b6fb3');sk.addColorStop(.45,'#e59a9a');sk.addColorStop(.8,'#ffcf8a');sk.addColorStop(1,'#ffe6b0');ctx.fillStyle=sk;ctx.fillRect(0,0,vw,fy);
+  ctx.save();ctx.globalCompositeOperation='lighter';glow(vw*.72,fy-150,170,'255,200,120',.55);glow(vw*.72,fy-150,55,'255,246,215',.9);ctx.restore();
+  for(let i=0;i<5;i++){ctx.save();ctx.globalAlpha*=.6;blob(((r2(9660,i)*vw*1.2+tm*6)%(vw+300))-150,60+r2(9661,i)*120,90+r2(9662,i)*70,14,9663+i,.16,12,true);fl('#fde3d0');ctx.restore();}
+  // uzaklaşan Zümrüdüanka ve gökkuşağı izi
+  const ak=Math.min(1,t/10),ax=vw*.18+ak*vw*.5,ay=150-ak*90;ctx.save();ctx.globalCompositeOperation='lighter';for(let i=0;i<10;i++)glow(ax-i*9,ay+i*4,6-i*.4,i%3===0?'90,230,180':i%3===1?'255,200,120':'180,150,255',.6*(1-i/10));ctx.restore();
+  ctx.beginPath();ctx.moveTo(ax-12,ay);ctx.quadraticCurveTo(ax,ay-9+Math.sin(tm*8)*4,ax+12,ay);st(2.2,'#ffd77a');
+  // tepeler ve köy
+  ctx.beginPath();ctx.moveTo(0,fy-90);ctx.quadraticCurveTo(vw*.25,fy-150,vw*.5,fy-100);ctx.quadraticCurveTo(vw*.75,fy-60,vw,fy-120);ctx.lineTo(vw,fy);ctx.lineTo(0,fy);ctx.closePath();fl('#8fae6a');
+  for(let i=0;i<4;i++){const hx=vw*(.55+i*.1),hy=fy-95+i*6;ctx.fillStyle='#c79a6a';ctx.fillRect(hx-12,hy-14,24,16);ctx.beginPath();ctx.moveTo(hx-16,hy-13);ctx.lineTo(hx,hy-26);ctx.lineTo(hx+16,hy-13);ctx.closePath();fl('#9a4f2f');}
+  ctx.beginPath();ctx.moveTo(0,fy-40);ctx.quadraticCurveTo(vw*.3,fy-70,vw*.6,fy-45);ctx.quadraticCurveTo(vw*.85,fy-25,vw,fy-50);ctx.lineTo(vw,fy);ctx.lineTo(0,fy);ctx.closePath();fl('#6f9a52');
+  // Seher Ana'nın evi (solda)
+  const hx=Math.min(vw*.14,180);ctx.fillStyle='#b98a5a';ctx.fillRect(hx-120,fy-230,260,232);
+  ctx.beginPath();ctx.moveTo(hx-140,fy-226);ctx.lineTo(hx+10,fy-300);ctx.lineTo(hx+160,fy-226);ctx.closePath();fl('#8a4a2c');st(2,'#4a2416');
+  for(let i=0;i<7;i++){ctx.beginPath();ctx.moveTo(hx-130+i*42,fy-226);ctx.lineTo(hx+10,fy-298);st(1,'rgba(60,30,18,.35)');}
+  ctx.fillStyle='#5a3620';ctx.fillRect(hx-40,fy-130,64,130);ctx.fillStyle='#ffd27a';ctx.fillRect(hx+60,fy-170,50,42);
+  ctx.save();ctx.globalCompositeOperation='lighter';glow(hx+85,fy-150,60,'255,200,110',.45);ctx.restore();ctx.strokeStyle='#4a2c1b';ctx.lineWidth=4;ctx.strokeRect(hx+60,fy-170,50,42);
+  ctx.fillStyle='#6b4a32';ctx.fillRect(hx+80,fy-296,16,40);for(let i=0;i<4;i++){const q=((t*.35+i*.25)%1);ctx.save();ctx.globalAlpha*=(1-q)*.5;circ(hx+88+q*18,fy-300-q*60,6+q*10);fl('#f4ece6');ctx.restore();}
+  // bahçe çiti
+  for(let x=hx+150;x<vw+20;x+=26){ctx.fillStyle='#9a6b42';ctx.fillRect(x,fy-70,8,70);ctx.beginPath();ctx.moveTo(x,fy-70);ctx.lineTo(x+4,fy-78);ctx.lineTo(x+8,fy-70);ctx.closePath();fl('#9a6b42');}
+  ctx.fillStyle='#8a5c36';ctx.fillRect(hx+150,fy-56,vw,6);ctx.fillRect(hx+150,fy-28,vw,6);
+  // çimen zemin
+  const gg=ctx.createLinearGradient(0,fy,0,H);gg.addColorStop(0,'#7fb05a');gg.addColorStop(1,'#4f7f3a');ctx.fillStyle=gg;ctx.fillRect(0,fy,vw,H-fy);
+  for(let i=0;i<70;i++){const gx=r2(9670,i)*vw,gy=fy+4+r2(9671,i)*(H-fy-6);ctx.beginPath();ctx.moveTo(gx,gy);ctx.lineTo(gx+2,gy-6);st(1.2,'#3f6e2e');}
+  // çiçeklenme: çit dibinde, çimde ve evin önünde
+  if(bl>=0){for(let i=0;i<46;i++){const fx=r2(9680,i)*vw,fyy=i<16?fy-2:fy+10+r2(9681,i)*(H-fy-20),d=r2(9682,i)*1.6;drawFlower(fx,fyy,Math.min(1,(bl-d)/1.1),Math.floor(r2(9683,i)*360),i);}}
+  // karakterler ve sofra (dar ekranda birlikte ölçeklenir)
   const gs=Math.min(1,vw/1060);ctx.save();ctx.translate(cx,fy);ctx.scale(gs,gs);ctx.translate(-cx,-fy);
-  const ow=260,oh=250;ctx.fillStyle='#7d6c62';rr(cx-ow/2,fy-oh,ow,oh,16);ctx.fill();
-  ctx.save();rr(cx-ow/2,fy-oh,ow,oh,16);ctx.clip();for(let r=0;r<6;r++)for(let c=-1;c<6;c++){ctx.strokeStyle='rgba(40,28,24,.35)';ctx.lineWidth=1.2;ctx.strokeRect(cx-ow/2+c*ow/6+(r%2)*22,fy-oh+r*oh/6,ow/6,oh/6);}ctx.restore();
-  rr(cx-ow/2,fy-oh,ow,oh,16);st(3,'#3b2b28');
-  ctx.fillStyle='#1a1110';ctx.beginPath();ctx.moveTo(cx-80,fy);ctx.lineTo(cx-80,fy-110);ctx.quadraticCurveTo(cx,fy-190,cx+80,fy-110);ctx.lineTo(cx+80,fy);ctx.closePath();ctx.fill();
-  ctx.fillStyle='#5a3a26';ctx.fillRect(cx-ow/2-20,fy-oh-14,ow+40,18);
-  const fk=.8+.2*Math.sin(tm*7)*Math.sin(tm*3.1);
-  ctx.save();ctx.globalCompositeOperation='lighter';glow(cx,fy-60,320,'255,150,70',.42*fk);glow(cx,fy-40,90,'255,220,140',.7*fk);ctx.restore();
-  for(let k=0;k<6;k++){const fx=cx-45+k*18,fh=50+Math.sin(tm*8+k*1.7)*16;ctx.beginPath();ctx.moveTo(fx-11,fy-12);ctx.quadraticCurveTo(fx-4,fy-12-fh*.6,fx,fy-12-fh);ctx.quadraticCurveTo(fx+4,fy-12-fh*.6,fx+11,fy-12);ctx.closePath();fl(k%2?'rgba(255,170,60,.9)':'rgba(255,232,140,.9)');}
-  // bakır kazan ve buhar
-  ctx.beginPath();ctx.moveTo(cx,fy-170);ctx.lineTo(cx,fy-118);st(2,'#2a1d18');
-  ctx.beginPath();ctx.moveTo(cx-44,fy-118);ctx.quadraticCurveTo(cx-48,fy-70,cx,fy-66);ctx.quadraticCurveTo(cx+48,fy-70,cx+44,fy-118);ctx.closePath();const kg=ctx.createLinearGradient(cx-44,0,cx+44,0);kg.addColorStop(0,'#7a3c1c');kg.addColorStop(.45,'#e08a4a');kg.addColorStop(1,'#6a3015');ctx.fillStyle=kg;ctx.fill();st(2,'#3a1a0c');
-  for(let i=0;i<4;i++){const q=((t*.5+i*.25)%1);ctx.save();ctx.globalAlpha*=(1-q)*.45;blob(cx-10+Math.sin(q*6+i)*12,fy-130-q*120,14+q*20,10+q*12,9610+i,.2,10,true);fl('#f4ebe2');ctx.restore();}
-  // yer: Dev Anası'nın kilimi
-  ctx.save();ctx.setTransform(VIEW.S,0,0,VIEW.S,0,0);ctx.fillStyle='#4a2c1b';ctx.fillRect(0,fy,vw,H-fy);ctx.restore();
-  ctx.save();ctx.translate(cx,fy+52);ctx.scale(1,.3);const ts=120;[[-1,-1],[1,-1],[-1,1],[1,1]].forEach(([zx,zy],i)=>{ctx.save();ctx.translate(zx*ts/2,zy*ts/2);kilimTile(i,DEV.kilimWant[i],ts,0);ctx.restore();});
-  ctx.strokeStyle='#f1d790';ctx.lineWidth=4;ctx.strokeRect(-ts,-ts,ts*2,ts*2);ctx.restore();
-  // önce ocak önünde üçlü sarılma, sonra sini başında çorba
-  const hug=t>1.2&&t<6.2?Math.min(1,(t-1.2)/.5)*Math.min(1,(6.2-t)/.5):0,sep=sm((t-5.8)/1.4),eatK=FN.eatT>=0?sm(FN.eatT/1.2):0;
-  const anaX=lerp(cx-215,cx-175,sep),keloX=lerp(cx-128,cx+175,sep),periX=lerp(cx-60,cx+275,sep),periY=lerp(fy-160,fy-140,sep);
-  if(hug>.02){ctx.save();ctx.globalCompositeOperation='lighter';glow(cx-140,fy-110,110,'255,212,140',hug*.38);for(let i=0;i<5;i++){const a=tm*1.3+i*1.26;glow(cx-140+Math.cos(a)*60,fy-130+Math.sin(a)*30,8,'255,225,165',hug*.3);}ctx.restore();}
-  drawAnaVolume(anaX,fy+8,{gaze:1,headTurn:.6,bodyTurn:.7,stroke:hug,talking:UI.dlgWho==='ana'&&UI.typing&&!UI.typing.done,scale:1.05});
-  drawPeri(periX+Math.sin(tm*.9)*4*sep,periY,1.75,{hug,wave:UI.dlgWho==='peri'&&hug<.1});
+  ctx.save();ctx.translate(cx,fy+40);ctx.scale(1,.3);const ts=120;[[-1,-1],[1,-1],[-1,1],[1,1]].forEach(([zx,zy],i)=>{ctx.save();ctx.translate(zx*ts/2,zy*ts/2);kilimTile(i,DEV.kilimWant[i],ts,0);ctx.restore();});ctx.strokeStyle='#f1d790';ctx.lineWidth=4;ctx.strokeRect(-ts,-ts,ts*2,ts*2);ctx.restore();
+  // önce Keloğlan anasına, sonra Seher Ana Nurperi'ye sarılır; ardından sofraya geçilir
+  const win=(t0,t1)=>t>t0&&t<t1?Math.min(1,(t-t0)/.5)*Math.min(1,(t1-t)/.5):0;
+  const hugK=win(1.2,4.4),hugP=win(4.3,7.3),hug=Math.max(hugK,hugP),sep=sm((t-7.1)/1.4),eatK=FN.eatT>=0?sm(Math.min(FN.eatT,t-8.4)/1.2):0;
+  const step=sm((t-4.1)/.8),pin=sm((t-4.1)/.9);
+  const anaX=lerp(cx-215,cx-175,sep),keloX=lerp(lerp(cx-128,cx+40,step),cx+175,sep);
+  const periX=lerp(lerp(cx+130,cx-138,pin),cx+275,sep),periY=lerp(lerp(fy-190,fy-128,pin),fy-140,sep);
+  if(hug>.02){ctx.save();ctx.globalCompositeOperation='lighter';glow(cx-150,fy-110,110,'255,212,140',hug*.38);for(let i=0;i<4;i++){const a2=tm*1.4+i*1.57;drawHeart(cx-150+Math.cos(a2)*55,fy-190+Math.sin(a2)*14,5,'rgba(255,120,150,'+(hug*.8)+')');}ctx.restore();}
+  drawAnaVolume(anaX,fy+8,{gaze:1,headTurn:hugP>.1?.4:.6,bodyTurn:.7,stroke:hug,talking:UI.dlgWho==='ana'&&UI.typing&&!UI.typing.done,scale:1.05});
+  drawPeri(periX+Math.sin(tm*.9)*4*sep,periY,1.75,{hug:hugP,wave:(UI.dlgWho==='peri'&&hug<.1)||en>=0});
   ctx.save();ctx.translate(keloX,fy+8-GY);
-  const kAct=hug>.02?{type:'hug',t:Math.min(t-1.2,1),dur:9}:(t>6.6&&t<9?{type:'cheer',t:(t-6.6)%1,dur:1}:null);
+  const kAct=hugK>.02?{type:'hug',t:Math.min(t-1.2,1),dur:9}:hugP>.05?{type:'cheer',t:(t-4.3)%1,dur:1}:(bl>=0&&bl<3?{type:'cheer',t:bl%1,dur:1}:(t>6.6&&t<9?{type:'cheer',t:(t-6.6)%1,dur:1}:null));
   drawKelo({x:0,face:-1,moving:sep>0&&sep<1,phase:t*9,act:kAct,talk:UI.dlgWho==='kelo'&&UI.typing&&!UI.typing.done?1:0,mood:'happy',scale:1.02},null,true);ctx.restore();
   if(eatK>0)drawSoupTray(cx,fy+44,eatK,FN.eatT);
   ctx.restore();
-  // ocağın sıcak ışığı her şeyi sarar
-  ctx.save();ctx.globalCompositeOperation='lighter';glow(cx,fy-80,vw*.55,'255,150,80',.12*fk);ctx.restore();
-  const vg=ctx.createRadialGradient(cx,fy-120,H*.35,cx,fy-120,vw*.8);vg.addColorStop(0,'rgba(0,0,0,0)');vg.addColorStop(1,'rgba(20,10,6,.55)');ctx.fillStyle=vg;ctx.fillRect(0,0,vw,H);
-  // sıcak ışıktan sızan kıvılcımlar
-  ctx.save();ctx.globalCompositeOperation='lighter';for(let i=0;i<14;i++){const q=((t*.35+r2(9620,i))%1);glow(cx-60+r2(9621,i)*120+Math.sin(q*9+i)*14,fy-60-q*260,2.4,'255,190,100',.7*(1-q));}ctx.restore();
+  // kalpler, renkli yapraklar ve kelebekler
+  if(bl>=0){const k=Math.min(1,bl/1.5);
+    for(let i=0;i<16;i++){const q=((bl*.18+r2(9690,i))%1),hx2=r2(9691,i)*vw+Math.sin(q*8+i)*20,hy2=fy-q*(fy-40);ctx.save();ctx.globalAlpha*=k*(1-q)*.9;drawHeart(hx2,hy2,6+r2(9692,i)*7,['#ff6b8a','#ff9f43','#f368e0','#ff4d6d'][i%4]);ctx.restore();}
+    for(let i=0;i<28;i++){const q=((bl*.12+r2(9693,i))%1),px=r2(9694,i)*vw+Math.sin(q*10+i)*30,py=q*H;ctx.save();ctx.globalAlpha*=k*.85;ctx.translate(px,py);ctx.rotate(q*9+i);ell(0,0,4,2);fl('hsl('+Math.floor(r2(9695,i)*360)+',85%,70%)');ctx.restore();}
+    for(let i=0;i<4;i++){const bx=(r2(9696,i)*vw+bl*40*(i%2?1:-1)+vw*2)%vw,by=fy-80-r2(9697,i)*120+Math.sin(bl*2+i)*20,w=Math.abs(Math.sin(tm*12+i))*7+2;ctx.save();ctx.globalAlpha*=k;ell(bx-w*.6,by,w,5);fl(i%2?'#ffd166':'#a29bfe');ell(bx+w*.6,by,w,5);fl(i%2?'#ffd166':'#a29bfe');ctx.restore();}}
+  // "Son" ve devam yazısı
+  if(en>=0){const k=sm(en/1.2);ctx.save();ctx.globalAlpha*=k*.55;ctx.fillStyle='#1a0f0a';ctx.fillRect(0,0,vw,H);ctx.restore();
+    ctx.save();ctx.globalAlpha*=k;ctx.textAlign='center';ctx.textBaseline='middle';
+    ctx.font='700 '+Math.round(Math.min(120,vw*.16))+"px 'Amatic SC','Comic Sans MS',cursive";ctx.fillStyle='#ffd77a';ctx.shadowColor='rgba(255,170,80,.7)';ctx.shadowBlur=30;ctx.fillText(T('c7f_end_t'),vw/2,H*.4);
+    ctx.shadowBlur=0;ctx.font='700 '+Math.round(Math.min(46,vw*.075))+"px 'Amatic SC','Comic Sans MS',cursive";ctx.fillStyle='#fff3dc';ctx.fillText(T('c7f_end_p'),vw/2,H*.4+Math.min(90,vw*.13));
+    for(let i=0;i<5;i++)drawHeart(vw/2+(i-2)*34,H*.4-Math.min(90,vw*.13),7,['#ff6b8a','#ff9f43','#f368e0','#ffd166','#7bed9f'][i]);
+    ctx.restore();}
   ctx.restore();
   ctx.save();ctx.fillStyle='rgba(255,250,236,'+(1-sm(t/1.4))+')';ctx.fillRect(0,0,vw,H);ctx.restore();
 }
-
 /* ===== Zorluk: taş saat cevabı Dev Anası'na söylenir (Orta/Zor); Zor'da yanlış cevapta uyuklar ===== */
 function devQ1Key(){return DIFF==='kolay'?'c7d_q1':'c7d_q1b';}
 function devQ1Answer(){
@@ -5493,6 +5508,9 @@ function drawSoupTray(x,y,k,et){
     ctx.restore();});
   ctx.restore();
 }
+
+Object.assign(STR.tr,{c7f_end_t:'Son',c7f_end_p:'Keloğlan’ın maceraları devam ediyor...'});
+Object.assign(STR.en,{c7f_end_t:'The End',c7f_end_p:'Keloglan’s adventures continue...'});
 
 /* ===== 06 · Oyun mantığı: durum, eşyalar, tarifler, etkileşim noktaları, senaryo, ipucu, kayıt ===== */
 let F={};          // kalıcı bayraklar (kaydedilir)
